@@ -4,7 +4,7 @@ import asyncio
 from pathlib import Path
 from typing import Any
 
-from mcp.server import Server
+from mcp.server import Server, stdio_server
 from mcp.types import TextContent, Tool
 
 from rust_doc_mcp.config import get_config_path, load_config
@@ -224,8 +224,12 @@ class RustDocServer:
 
     async def run(self) -> None:
         """Run the server"""
-        async with self.server:
-            await asyncio.sleep(float("inf"))
+        async with stdio_server() as (read_stream, write_stream):
+            await self.server.run(
+                read_stream,
+                write_stream,
+                self.server.create_initialization_options(),
+            )
 
 
 def main() -> None:
