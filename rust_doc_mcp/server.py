@@ -31,7 +31,7 @@ class RustDocServer:
     def _register_tools(self) -> None:
         """Register MCP tools"""
 
-        @self.server.call_tool
+        @self.server.call_tool()
         async def handle_tool_call(name: str, arguments: dict) -> Any:
             if name == "search_rust_docs":
                 return await self._search_docs(
