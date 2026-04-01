@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "rust-doc-mcp"
+version = "0.1.0"
+description = "An MCP server for serving locally downloaded Rust documentation to Claude"
+authors = ["Tom <tom@example.com>"]
+readme = "README.md"
+packages = [{include = "rust_doc_mcp"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+mcp = "^0.9.0"
+pydantic = "^2.0"
+
+[tool.poetry.scripts]
+rust-doc-mcp = "rust_doc_mcp.server:main"
+rust-doc-mcp-init = "rust_doc_mcp.cli:init_config"
+rust-doc-mcp-config = "rust_doc_mcp.cli:show_config"
+rust-doc-mcp-verify = "rust_doc_mcp.cli:verify_setup"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.0"
+black = "^24.0"
+ruff = "^0.1.0"
+mypy = "^1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

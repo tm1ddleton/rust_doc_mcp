@@ -1,0 +1,24 @@
+{
+  "crates": {
+    "polars": {
+      "name": "polars",
+      "path": "~/rust_docs/polars",
+      "description": "Fast DataFrame library for Python/Rust"
+    },
+    "serde": {
+      "name": "serde",
+      "path": "~/rust_docs/serde",
+      "description": "Serialization framework for Rust"
+    },
+    "tokio": {
+      "name": "tokio",
+      "path": "~/rust_docs/tokio",
+      "description": "Async runtime for Rust"
+    },
+    "pandas-compat": {
+      "name": "pandas-compat",
+      "path": "/path/to/your/project/target/doc/pandas_compat",
+      "description": "Your custom crate documentation"
+    }
+  }
+}
