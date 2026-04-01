@@ -1,10 +1,11 @@
 """MCP Server for Rust documentation"""
 
+import asyncio
 from pathlib import Path
 from typing import Any
 
 from mcp.server import Server
-from mcp.types import Tool, TextContent
+from mcp.types import TextContent, Tool
 
 from rust_doc_mcp.config import get_config_path, load_config
 from rust_doc_mcp.indexer import DocIndexer
@@ -29,86 +30,6 @@ class RustDocServer:
 
     def _register_tools(self) -> None:
         """Register MCP tools"""
-        self.server.add_tool(
-            Tool(
-                name="search_rust_docs",
-                description="Search Rust documentation for a specific crate",
-                inputSchema={
-                    "type": "object",
-                    "properties": {
-                        "crate": {
-                            "type": "string",
-                            "description": "The name of the Rust crate to search (e.g., 'polars')",
-                        },
-                        "query": {
-                            "type": "string",
-                            "description": "Search query for documentation",
-                        },
-                        "limit": {
-                            "type": "integer",
-                            "description": "Maximum number of results to return (default: 10)",
-                            "default": 10,
-                        },
-                    },
-                    "required": ["crate", "query"],
-                },
-            )
-        )
-
-        self.server.add_tool(
-            Tool(
-                name="get_rust_doc",
-                description="Get the full documentation for a specific item",
-                inputSchema={
-                    "type": "object",
-                    "properties": {
-                        "crate": {
-                            "type": "string",
-                            "description": "The name of the Rust crate",
-                        },
-                        "path": {
-                            "type": "string",
-                            "description": "The documentation path/key (obtained from search results)",
-                        },
-                    },
-                    "required": ["crate", "path"],
-                },
-            )
-        )
-
-        self.server.add_tool(
-            Tool(
-                name="list_rust_crates",
-                description="List all available Rust crate documentations",
-                inputSchema={
-                    "type": "object",
-                    "properties": {},
-                    "required": [],
-                },
-            )
-        )
-
-        self.server.add_tool(
-            Tool(
-                name="list_crate_docs",
-                description="List all documentation files in a specific crate",
-                inputSchema={
-                    "type": "object",
-                    "properties": {
-                        "crate": {
-                            "type": "string",
-                            "description": "The name of the Rust crate",
-                        },
-                        "limit": {
-                            "type": "integer",
-                            "description": "Maximum number of results to return (default: 50)",
-                            "default": 50,
-                        },
-                    },
-                    "required": ["crate"],
-                },
-            )
-        )
 
         @self.server.call_tool
         async def handle_tool_call(name: str, arguments: dict) -> Any:
@@ -128,6 +49,81 @@ class RustDocServer:
                 )
             else:
                 return [TextContent(type="text", text=f"Unknown tool: {name}")]
+
+        # List tools
+        @self.server.list_tools()
+        async def list_tools() -> list[Tool]:
+            return [
+                Tool(
+                    name="search_rust_docs",
+                    description="Search Rust documentation for a specific crate",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "crate": {
+                                "type": "string",
+                                "description": "The name of the Rust crate to search (e.g., 'polars')",
+                            },
+                            "query": {
+                                "type": "string",
+                                "description": "Search query for documentation",
+                            },
+                            "limit": {
+                                "type": "integer",
+                                "description": "Maximum number of results to return (default: 10)",
+                                "default": 10,
+                            },
+                        },
+                        "required": ["crate", "query"],
+                    },
+                ),
+                Tool(
+                    name="get_rust_doc",
+                    description="Get the full documentation for a specific item",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "crate": {
+                                "type": "string",
+                                "description": "The name of the Rust crate",
+                            },
+                            "path": {
+                                "type": "string",
+                                "description": "The documentation path/key (obtained from search results)",
+                            },
+                        },
+                        "required": ["crate", "path"],
+                    },
+                ),
+                Tool(
+                    name="list_rust_crates",
+                    description="List all available Rust crate documentations",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {},
+                        "required": [],
+                    },
+                ),
+                Tool(
+                    name="list_crate_docs",
+                    description="List all documentation files in a specific crate",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "crate": {
+                                "type": "string",
+                                "description": "The name of the Rust crate",
+                            },
+                            "limit": {
+                                "type": "integer",
+                                "description": "Maximum number of results to return (default: 50)",
+                                "default": 50,
+                            },
+                        },
+                        "required": ["crate"],
+                    },
+                ),
+            ]
 
     async def _search_docs(self, crate: str, query: str, limit: int) -> Any:
         """Search documentation"""
@@ -229,14 +225,12 @@ class RustDocServer:
     async def run(self) -> None:
         """Run the server"""
         async with self.server:
-            pass
+            await asyncio.sleep(float("inf"))
 
 
 def main() -> None:
     """Entry point"""
     server = RustDocServer()
-    import asyncio
-
     asyncio.run(server.run())
 
 
